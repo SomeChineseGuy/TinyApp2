@@ -3,10 +3,16 @@
 <head>
   <title>TinyApp</title>
 </head>
-<body>
-  <header> <% include partials/_header %> </header>
-  <p> Hello! This is the page for <%= shortURL %> for <% for(let i in urls) { %> <%  if (shortURL === i) { %> <%= urls[i]  %> </p>
-  <% } %>
-  <% } %>
+<body style="font-size:20px; padding:50px;">
+  <% include partials/_header %>
+  <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
+  <!-- Form had some padding put Title in padding. -->
+  <h1> Make new short URL </h1>
+    <label for="longURL"></label>
+    <input id="longURL" type="text" value="<%= longURL %>" name="longURL" placeholder="http://" style="width: 300px">
+    <input type="submit" value="Update">
+     <p> To go back to see your list click <a href="/urls"> here.</a></p>
+
+  </form>
 </body>
 </html>

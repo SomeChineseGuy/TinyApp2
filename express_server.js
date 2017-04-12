@@ -44,6 +44,15 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls");
 });
 
+//-------------------------------- Deleting urls
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  let templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
+
+
 // app.get("/", (req, res ) => {
   
 // });
@@ -53,16 +62,25 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id };
+app.post("/urls/:shortURL", (req, res) => {
+  urlDatabase[req.params.shortURL] = addHttp(req.body.longURL);
+  let templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
+
+app.get("/urls/:shortURL", (req, res) => {
+  let shortURL = req.params.shortURL;
+  let longURL = urlDatabase[shortURL].url;
+  let templateVars = {
+    shortURL: shortURL,
+    longURL: longURL
+  };
+  // let templateVars = { urls: urlDatabase, shortURL: req.params.id };
+  // urlDatabase[shortURL].url = req.body.longURL;
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL];
-  if(longURL === undefined) {
-    res.status(404).send('URL not found');
-    return;
-  }
   res.redirect(longURL);
 });

@@ -7,8 +7,20 @@
   <header> <% include partials/_header %> </header>
   <h1> My Links! </h1>
   <ol> 
-    <% for(var i in urls) { %>
-    <p> <a href ="/u/<%= i%>"><%= i %> </a>  ---------------> <a href ="<%= urls[i]%>"/>   <%= urls[i] %> </a></p>
+    <% for(i in urls) { %>
+    <p> 
+      <a href ="/u/<%= i%>"><%= i %> 
+    </a>  ---------------> 
+    <a href ="<%= urls[i]%>"/>   
+      <%= urls[i] %> 
+      </a>
+    <form method="GET" action="/urls/<%= i %>">
+    <button type="submit">Edit</button>
+    </form>
+    <form method="POST" action="/urls/<%= i %>/delete">
+    <button type="submit">Delete</button>
+    </form>
+    </p>
     <% } %>
   </ol>
 </body>
