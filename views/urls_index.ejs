@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+  <header> <% include partials/_header %> </header>
+  <h1> My Links! </h1>
+  <ol> 
+    <% for(var i in urls) { %>
+    <p> <%= i %>  ---------------> <a href ="<%= urls[i]%>"/>   <%= urls[i] %> </a></p>
+    <% } %>
+  </ol>
+</body>
+</html>

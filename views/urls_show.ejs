@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body>
+  <header> <% include partials/_header %> </header>
+  <p> Hello! This is the page for <%= shortURL %> for <% for(let i in urls) { %> <%  if (shortURL === i) { %> <%= urls[i]  %> </p>
+  <% } %>
+  <% } %>
+</body>
+</html>
