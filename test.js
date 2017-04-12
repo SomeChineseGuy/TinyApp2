@@ -4,7 +4,7 @@ const urlDatabase = {
 };
 
 for(i in urlDatabase) {
-  console.log(urlDatabase[i].key)
+  console.log(urlDatabase[i].key);
 }
 //  console.log(urlDatabase.key)
 
