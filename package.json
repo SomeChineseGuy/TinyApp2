@@ -1,0 +1,22 @@
+{
+  "name": "d2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "express_server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SomeChineseGuy/TinyApp2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SomeChineseGuy/TinyApp2/issues"
+  },
+  "homepage": "https://github.com/SomeChineseGuy/TinyApp2#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.3"
+  }
+}
