@@ -1,17 +1,7 @@
-<% if (username){ %>
-<h1> Welcome <%= username %>! </h1>
+<% if (user){ %>
+<h1> Welcome <%= user.email %>! </h1>
 <form method="POST" action="/logout">
 <label for="username">Logout</label>
 <button type="submit">Logout</button>
 </form>
-<% } else { %>
-<form method="POST" action="/login">
-<label for="username">Login</label>
-<input id="username" type="text" name="username" style="width: 60px">
-<button type="submit">login</button>
-</form>
 <% } %>
-
-
-
-
