@@ -11,8 +11,8 @@
     <p> 
       <a href ="/u/<%= i%>"><%= i %> 
     </a>  ---------------> 
-    <a href ="<%= urls[i]%>"/>   
-      <%= urls[i] %> 
+    <a href ="<%= urls[i].longURL%>"/>   
+      <%= urls[i].longURL %> 
       </a>
     <form method="GET" action="/urls/<%= i %>">
     <button type="submit">Edit</button>
@@ -22,6 +22,8 @@
     </form>
     </p>
     <% } %>
+
+    <p> To make a new URL click <a href="/urls/new"> Here! </a> </p>
   </ol>
 </body>
 </html>

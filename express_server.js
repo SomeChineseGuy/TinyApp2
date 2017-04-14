@@ -6,8 +6,14 @@ const cookieParser = require('cookie-parser');
 // const cookieSession = require('cookie-session');
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userURL: "user2RandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userURL: "userRandomID"
+  }
 };
 
 const users = {
@@ -81,19 +87,30 @@ function checkExsistingUser (email, password){
 
 //-------------------------------- Creating new urls
 app.get("/urls/new", (req, res) => {
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
   res.render("urls_new");
 });
 
 app.post("/urls", (req, res) => {
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
   let newLong = generateRandomString();
-  let longURL = addHttp(req.body.longURL);
-  urlDatabase[newLong] = longURL;
+  let fullURL = addHttp(req.body.longURL);
+  urlDatabase[newLong] = {
+    longURL: fullURL
+  };
   res.redirect("/urls");
 });
 
 //-------------------------------- Deleting urls
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
   delete urlDatabase[req.params.shortURL];
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
@@ -127,17 +144,26 @@ app.get("/", (req, res) => {
 //------------------------------------ /URLS
 
 app.get("/urls", (req, res) => {
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL] = addHttp(req.body.longURL);
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
+  urlDatabase[req.params.shortURL].longURL = addHttp(req.body.longURL);
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
   let shortURL = req.params.shortURL;
   let longURL = urlDatabase[shortURL].url;
   let templateVars = {
@@ -148,7 +174,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -161,10 +187,10 @@ app.post("/register", (req, res) => {
   const uEmail = req.body.email;
   const uPassword = req.body.password;
   if (credentialsCheck(uEmail, uPassword)) {
-    res.status(400).send("Nooooooo lemon pedge");
+    return res.status(400).send("No username or password");
   } else {
     if(exsistingEmailCheck(uEmail)) {
-      res.status(400).send("Nooooooo lemon pedge2222");
+      return res.status(400).send("Email already in uses!");
     }
   }
   users[userId] = {
