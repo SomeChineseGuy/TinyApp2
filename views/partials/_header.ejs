@@ -1,5 +1,6 @@
 <% if (user){ %>
 <h1> Welcome <%= user.email %>! </h1>
+<h2> Your <a href="/urls"> links</a></h2>
 <form method="POST" action="/logout">
 <label for="username">Logout</label>
 <button type="submit">Logout</button>
