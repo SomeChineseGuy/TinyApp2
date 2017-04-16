@@ -7,17 +7,17 @@
   <header> <% include partials/_header %> </header>
   <h1> My Links! </h1>
   <ol> 
-    <% for(i in urls) { %>
+    <% for(let shortURL in urls) { %>
     <p> 
-      <a href ="/u/<%= i%>"><%= i %> 
+      <a href ="/u/<%= shortURL%>"><%= shortURL %> 
     </a>  ---------------> 
-    <a href ="<%= urls[i].longURL%>"/>   
-      <%= urls[i].longURL %> 
+    <a href ="<%= urls[shortURL].longURL%>"/>   
+      <%= urls[shortURL].longURL %> 
       </a>
-    <form method="GET" action="/urls/<%= i %>">
+    <form method="GET" action="/urls/<%= shortURL %>">
     <button type="submit">Edit</button>
     </form>
-    <form method="POST" action="/urls/<%= i %>/delete">
+    <form method="POST" action="/urls/<%= shortURL %>/delete">
     <button type="submit">Delete</button>
     </form>
     </p>
