@@ -2,7 +2,6 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
-// const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 
 const bcrypt = require('bcrypt');
@@ -34,7 +33,6 @@ const users = {
 };
 
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
   keys: ['SomeRandomKey'],
@@ -102,62 +100,7 @@ function matchingCurrrentUser (database, userID) {
   return space;
 }
 
-//-------------------------------- Creating new urls
-app.get("/urls/new", (req, res) => {
-  if(!res.locals.user) {
-    return res.status(401).render("_401");
-  }
-  res.render("urls_new");
-});
-
-app.post("/urls", (req, res) => {
-  if(!res.locals.user) {
-    return res.status(401).render("_401");
-  }
-  let newLong = generateRandomString();
-  let fullURL = addHttp(req.body.longURL);
-  let userId = res.locals.user.id;
-  let urlDetails = {};
-  urlDetails['longURL'] = fullURL;
-  urlDetails['userURL'] = userId;
-  urlDatabase[newLong] = urlDetails;
-  res.redirect("/urls");
-});
-
-//-------------------------------- Deleting urls
-
-app.post("/urls/:shortURL/delete", (req, res) => {
-  if(!res.locals.user) {
-    return res.status(401).render("_401");
-  }
-  delete urlDatabase[req.params.shortURL];
-  let templateVars = { urls: matchingCurrrentUser(urlDatabase, res.locals.user.id)};
-  res.render("urls_index", templateVars);
-});
-
-app.get("/login", (req, res) => {
-  if(res.locals.user) {
-    res.redirect("/");
-  }
-  res.render("_login");
-});
-
-app.post("/login", (req, res) => {
-  let lEmail = req.body.email;
-  let lPassword = req.body.password;
-  let currentUser = checkExistingUser(lEmail, lPassword);
-  if (!currentUser)  {
-    return res.status(403).render("_403");
-  }
-  req.session.user_id = currentUser;
-  res.redirect("/");
-});
-
-app.post("/logout", (req, res) => {
-  req.session = null;
-  res.redirect("/");
-});
-//------------------------------------ Home
+//------------------------------------ Gets for home, urls n new
 
 app.get("/", (req, res) => {
   if(res.locals.user) {
@@ -167,8 +110,6 @@ app.get("/", (req, res) => {
   }
 });
 
-//------------------------------------ /URLS
-
 app.get("/urls", (req, res) => {
   if(!res.locals.user) {
     return res.status(401).render("_401");
@@ -177,20 +118,14 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.post("/urls/:shortURL", (req, res) => {
+
+app.get("/urls/new", (req, res) => {
   if(!res.locals.user) {
     return res.status(401).render("_401");
   }
-  if (!urlDatabase[req.params.shortURL]) {
-    res.status(404).render("_404");
-  }
-  if (res.locals.user.id !== urlDatabase[req.params.shortURL].userURL) {
-    res.status(403).render("_403");
-  }
-  let templateVars = { urls: matchingCurrrentUser(urlDatabase, res.locals.user.id)};
-  urlDatabase[req.params.shortURL].longURL = addHttp(req.body.longURL);
-  res.render("urls_index", templateVars);
+  res.render("urls_new");
 });
+//---------------------------------- Short URLS
 
 app.get("/urls/:shortURL", (req, res) => {
   if(!res.locals.user) {
@@ -215,6 +150,8 @@ app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
+
+//--------------------------------- Register
 
 app.get("/register", (req, res) => {
   if(res.locals.user) {
@@ -241,6 +178,75 @@ app.post("/register", (req, res) => {
   };
   req.session.user_id = userId;
   res.redirect('/urls');
+});
+
+//------------------------------- Logins
+
+app.get("/login", (req, res) => {
+  if(res.locals.user) {
+    res.redirect("/");
+  }
+  res.render("_login");
+});
+
+app.post("/login", (req, res) => {
+  let lEmail = req.body.email;
+  let lPassword = req.body.password;
+  let currentUser = checkExistingUser(lEmail, lPassword);
+  if (!currentUser)  {
+    return res.status(403).render("_403");
+  }
+  req.session.user_id = currentUser;
+  res.redirect("/");
+});
+
+app.post("/urls", (req, res) => {
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
+  let newLong = generateRandomString();
+  let fullURL = addHttp(req.body.longURL);
+  let userId = res.locals.user.id;
+  let urlDetails = {};
+  urlDetails['longURL'] = fullURL;
+  urlDetails['userURL'] = userId;
+  urlDatabase[newLong] = urlDetails;
+  res.redirect("/urls");
+});
+
+//-------------------------------- Logout
+
+app.post("/logout", (req, res) => {
+  req.session = null;
+  res.redirect("/");
+});
+
+//-------------------------------- Deleting urls
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
+  delete urlDatabase[req.params.shortURL];
+  let templateVars = { urls: matchingCurrrentUser(urlDatabase, res.locals.user.id)};
+  res.render("urls_index", templateVars);
+});
+
+//------------------------------------ /URLS
+
+app.post("/urls/:shortURL", (req, res) => {
+  if(!res.locals.user) {
+    return res.status(401).render("_401");
+  }
+  if (!urlDatabase[req.params.shortURL]) {
+    res.status(404).render("_404");
+  }
+  if (res.locals.user.id !== urlDatabase[req.params.shortURL].userURL) {
+    res.status(403).render("_403");
+  }
+  let templateVars = { urls: matchingCurrrentUser(urlDatabase, res.locals.user.id)};
+  urlDatabase[req.params.shortURL].longURL = addHttp(req.body.longURL);
+  res.render("urls_index", templateVars);
 });
 
 app.listen(PORT, () => {
