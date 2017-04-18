@@ -5,39 +5,17 @@ const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 
 const bcrypt = require('bcrypt');
-const password = "purple-monkey-dinosaur";
-const hashedPassword = bcrypt.hashSync(password, 10);
 
 const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userURL: "user2RandomID"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userURL: "userRandomID"
-  }
 };
 
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "123"
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "123"
-  }
 };
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
-  keys: ['SomeRandomKey'],
- 
-  maxAge: 24 * 60 * 60 * 1000
+  keys: ['SomeRandomKey']
 }));
 
 app.use(function (req, res, next) {
@@ -60,44 +38,43 @@ function generateRandomString() {
 
 function addHttp(url) {
   let string = "http://";
-  if (!url.includes(string)) {
+  if (!url.startsWith(string)) {
     return `http://${url}`;
   }
   return url;
 }
 
 function credentialsCheck(email, password) {
-  if (!email || !password) {
-    return true;
-  }
+  return (!email || !password);
 }
 
 function existingEmailCheck(email) {
   for (id in users) {
     if (users[id].email === email)  { return true; }
   }
+  return false;
 }
 
 function checkExistingUser (email, password){
   for (id in users) {
-    if (users[id].email === email && bcrypt.hashSync(password, users[id].password)) {
+    if (users[id].email === email && bcrypt.compareSync(password, users[id].password)) {
       return id;
     }
   }
 }
 
 function matchingShort (shortUrl, userId) {
-  return (urlDatabase[shortUrl].userURL === userId);
+  return (urlDatabase[shortUrl].userID === userId);
 }
 
 function matchingCurrrentUser (database, userID) {
-  let space = {};
+  let currentUserDB = {};
   for(let i in database) {
-    if (database[i].userURL === userID) {
-      space[i] = database[i];
+    if (database[i].userID === userID) {
+      currentUserDB[i] = database[i];
     }
   }
-  return space;
+  return currentUserDB;
 }
 
 //------------------------------------ Gets for home, urls n new
@@ -209,7 +186,7 @@ app.post("/urls", (req, res) => {
   let userId = res.locals.user.id;
   let urlDetails = {};
   urlDetails['longURL'] = fullURL;
-  urlDetails['userURL'] = userId;
+  urlDetails['userID'] = userId;
   urlDatabase[newLong] = urlDetails;
   res.redirect("/urls");
 });
@@ -241,7 +218,7 @@ app.post("/urls/:shortURL", (req, res) => {
   if (!urlDatabase[req.params.shortURL]) {
     res.status(404).render("_404");
   }
-  if (res.locals.user.id !== urlDatabase[req.params.shortURL].userURL) {
+  if (res.locals.user.id !== urlDatabase[req.params.shortURL].userID) {
     res.status(403).render("_403");
   }
   let templateVars = { urls: matchingCurrrentUser(urlDatabase, res.locals.user.id)};
